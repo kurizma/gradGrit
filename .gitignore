@@ -3,3 +3,4 @@ app/backend/node_modules
 app/backend/.wrangler
 app/frontend/.wrangler
 app/frontend/wrangler.jsonc
+.todo.md

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GradGrit Admin</title>
+  </head>
+
+  <body>
+    <main>
+      <h1>GradGrit Admin</h1>
+
+      <section id="login-section" aria-labelledby="login-heading">
+        <h2 id="login-heading">Owner login</h2>
+
+        <form id="login-form">
+          <div>
+            <label for="password">Owner password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+
+          <button type="submit" id="login-button">
+            Log in
+          </button>
+
+          <p id="login-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section
+        id="admin-section"
+        aria-labelledby="admin-heading"
+        hidden
+      >
+        <h2 id="admin-heading">Admin dashboard</h2>
+
+        <p id="admin-status" role="status" aria-live="polite">
+          You are logged in.
+        </p>
+
+        <button type="button" id="logout-button">
+          Log out
+        </button>
+
+        <p>
+          Message moderation will appear here after the admin message
+          endpoints are added.
+        </p>
+      </section>
+    </main>
+
+    <script src="/admin/admin.js" defer></script>
+  </body>
+</html>

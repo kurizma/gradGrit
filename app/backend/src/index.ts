@@ -2,6 +2,11 @@ import { createClient } from "@supabase/supabase-js";
 import type { Env } from "./types";
 import { json, getCorsHeaders } from "./lib/http";
 import {
+  handleOwnerLogin,
+  handleOwnerLogout,
+  handleOwnerCheck,
+} from "./routes/admin";
+import {
   containsBannedContent,
   getClientIp,
   getFileSizeError,
@@ -28,12 +33,27 @@ export default {
       return json(request, { status: "ok" });
     }
 
+    if (url.pathname === "/admin/login") {
+      return handleOwnerLogin(request, env);
+    }
+
+    if (url.pathname === "/admin/logout") {
+      return handleOwnerLogout(request);
+    }
+
+    if (url.pathname === "/admin/check") {
+      return handleOwnerCheck(request, env);
+    }
+
     const supabase = createClient(
       env.SUPABASE_URL,
       env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    if (url.pathname === "/messages" && request.method === "GET") {
+    if (
+      url.pathname === "/messages" &&
+      request.method === "GET"
+    ) {
       const { data, error } = await supabase
         .from("messages")
         .select("id, name, message, created_at")
@@ -54,7 +74,10 @@ export default {
       return json(request, data);
     }
 
-    if (url.pathname === "/messages" && request.method === "POST") {
+    if (
+      url.pathname === "/messages" &&
+      request.method === "POST"
+    ) {
       let formData: FormData;
 
       try {
@@ -189,7 +212,7 @@ export default {
             name: cleanName,
             message: cleanMessage,
             ip_address: getClientIp(request),
-            approved: false,
+            approved: true,
           })
           .select("id, name, message, approved, created_at")
           .single();
