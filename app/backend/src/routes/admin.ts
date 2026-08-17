@@ -1,4 +1,4 @@
-import { json } from "../lib/http";
+import { getCorsHeaders, json } from "../lib/http";
 import {
   clearOwnerSessionCookie,
   createOwnerSessionCookie,
@@ -289,6 +289,106 @@ export async function handleModerateMessage(
     );
   } catch (err) {
     console.error("Error in /admin/messages/:id:", err);
+    return json(
+      request,
+      { error: "Internal server error" },
+      500
+    );
+  }
+}
+
+export async function handleGetAttachment(
+  request: Request,
+  env: Env
+): Promise<Response> {
+  if (request.method !== "GET") {
+    return json(
+      request,
+      { error: "Method not allowed." },
+      405
+    );
+  }
+
+  // Extract attachment ID from URL path
+  const url = new URL(request.url);
+  const pathParts = url.pathname.split("/").filter(Boolean);
+  // Path: /attachments/:id
+  const attachmentId = pathParts[1];
+
+  if (!attachmentId) {
+    return json(
+      request,
+      { error: "Attachment ID required" },
+      400
+    );
+  }
+
+  try {
+    const supabase = createClient(
+      env.SUPABASE_URL,
+      env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    // Get attachment metadata
+    const { data: attachment, error } = await supabase
+      .from("message_attachments")
+      .select(`
+        id,
+        message_id,
+        object_key,
+        mime_type,
+        original_name,
+        file_size,
+        messages (
+          approved
+        )
+      `)
+      .eq("id", attachmentId)
+      .single();
+
+    if (error || !attachment) {
+      console.error("Attachment not found:", error);
+      return json(
+        request,
+        { error: "Attachment not found" },
+        404
+      );
+    }
+
+    // Check if parent message is approved (for public access)
+    // For now, we allow access to all attachments
+    // You can add approval check here later if needed
+
+    // Get file from R2
+    const object = await env.MY_BUCKET.get(attachment.object_key);
+
+    if (!object || !object.body) {
+      console.error("R2 object not found:", attachment.object_key);
+      return json(
+        request,
+        { error: "File not found" },
+        404
+      );
+    }
+
+    // Set response headers
+    const headers = getCorsHeaders(request);
+    headers.set(
+      "Content-Type",
+      attachment.mime_type || object.httpMetadata?.contentType || "application/octet-stream"
+    );
+    headers.set(
+      "Content-Disposition",
+      `inline; filename="${(attachment.original_name || "attachment").replace(/"/g, "")}"`
+    );
+    headers.set("Cache-Control", "public, max-age=31536000");
+
+    return new Response(object.body, {
+      status: 200,
+      headers,
+    });
+  } catch (err) {
+    console.error("Error in /attachments/:id:", err);
     return json(
       request,
       { error: "Internal server error" },

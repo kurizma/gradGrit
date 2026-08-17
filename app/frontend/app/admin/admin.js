@@ -77,14 +77,14 @@ async function loadMessages() {
       }
     );
 
-    console.log("Response status:", response.status);
+    // console.log("Response status:", response.status);
 
     if (!response.ok) {
       throw new Error("Failed to load messages");
     }
 
     const result = await response.json();
-    console.log("Messages loaded:", result.messages?.length || 0);
+    // console.log("Messages loaded:", result.messages?.length || 0);
     
     renderMessages(result.messages || []);
   } catch (error) {
@@ -126,22 +126,95 @@ function renderMessages(messages) {
     const row = document.createElement("tr");
     row.dataset.messageId = msg.id;
 
+    const attachmentsCell = document.createElement("td");
+
+    if (msg.message_attachments && msg.message_attachments.length > 0) {
+      msg.message_attachments.forEach(att => {
+        const fileUrl = `${API_BASE}/attachments/${att.id}`;
+        const fileName = escapeHtml(att.original_name || "attachment");
+        const mimeType = att.mime_type || "";
+        const attDiv = document.createElement("div");
+
+        if (mimeType.startsWith("image/")) {
+          const img = document.createElement("img");
+          img.src = fileUrl;
+          img.alt = fileName;
+          const link = document.createElement("a");
+          link.href = fileUrl;
+          link.target = "_blank";
+          link.appendChild(img);
+          attDiv.appendChild(link);
+          
+          const nameLink = document.createElement("a");
+          nameLink.href = fileUrl;
+          nameLink.target = "_blank";
+          nameLink.textContent = fileName;
+          attDiv.appendChild(document.createElement("br"));
+          attDiv.appendChild(nameLink);
+        } else if (mimeType.startsWith("video/")) {
+          const video = document.createElement("video");
+          video.controls = true;
+          const source = document.createElement("source");
+          source.src = fileUrl;
+          source.type = mimeType;
+          video.appendChild(source);
+          video.innerHTML += "Your browser does not support video.";
+          
+          const link = document.createElement("a");
+          link.href = fileUrl;
+          link.target = "_blank";
+          link.textContent = fileName;
+          
+          attDiv.appendChild(video);
+          attDiv.appendChild(document.createElement("br"));
+          attDiv.appendChild(link);
+        } else if (mimeType.startsWith("audio/")) {
+          const audio = document.createElement("audio");
+          audio.controls = true;
+          const source = document.createElement("source");
+          source.src = fileUrl;
+          source.type = mimeType;
+          audio.appendChild(source);
+          audio.innerHTML += "Your browser does not support audio.";
+          
+          const link = document.createElement("a");
+          link.href = fileUrl;
+          link.target = "_blank";
+          link.textContent = fileName;
+          
+          attDiv.appendChild(audio);
+          attDiv.appendChild(document.createElement("br"));
+          attDiv.appendChild(link);
+        } else {
+          const link = document.createElement("a");
+          link.href = fileUrl;
+          link.target = "_blank";
+          link.textContent = "📎 " + fileName;
+          attDiv.appendChild(link);
+        }
+
+        attachmentsCell.appendChild(attDiv);
+      });
+    } else {
+      attachmentsCell.textContent = "None";
+    }
+
     row.innerHTML = `
       <td>${new Date(msg.created_at).toLocaleDateString()}</td>
       <td>${escapeHtml(msg.name || "")}</td>
       <td>${escapeHtml(msg.message || "")}</td>
       <td>${msg.approved ? "Approved" : "Hidden"}</td>
-      <td>${msg.message_attachments && msg.message_attachments.length > 0 ? `${msg.message_attachments.length} file(s)` : "None"}</td>
-      <td>
-        <button 
-          class="toggle-approval-btn" 
-          data-message-id="${msg.id}" 
-          data-approved="${msg.approved}"
-        >
-          ${msg.approved ? "Hide" : "Restore"}
-        </button>
-      </td>
     `;
+    row.appendChild(attachmentsCell);
+
+    const actionsCell = document.createElement("td");
+    const actionButton = document.createElement("button");
+    actionButton.className = "toggle-approval-btn";
+    actionButton.dataset.messageId = msg.id;
+    actionButton.dataset.approved = msg.approved;
+    actionButton.textContent = msg.approved ? "Hide" : "Restore";
+    actionsCell.appendChild(actionButton);
+    row.appendChild(actionsCell);
 
     table.appendChild(row);
   });

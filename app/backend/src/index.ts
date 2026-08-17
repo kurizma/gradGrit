@@ -7,6 +7,7 @@ import {
   handleOwnerCheck,
   handleGetAdminMessages,
   handleModerateMessage,
+  handleGetAttachment,
 } from "./routes/admin";
 import {
   containsBannedContent,
@@ -55,6 +56,10 @@ export default {
 
     if (url.pathname.startsWith("/admin/messages/") && request.method === "PATCH") {
       return handleModerateMessage(request, env);
+    }
+
+    if (url.pathname.startsWith("/attachments/") && request.method === "GET") {
+      return handleGetAttachment(request, env);
     }
 
     const supabase = createClient(
