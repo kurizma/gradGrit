@@ -1,5 +1,5 @@
-// apps/backend/api/src/index.ts
 import { createClient } from '@supabase/supabase-js';
+import type { Env } from './types';
 
 export default {
   async fetch(request: Request, env: Env) {
