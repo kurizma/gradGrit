@@ -1,3 +1,5 @@
+// test
+
 const API_BASE = "https://gradgrit-api.kurizmatic.workers.dev";
 
 const loginSection = document.getElementById("login-section");
