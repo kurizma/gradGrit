@@ -67,3 +67,5 @@ form.addEventListener('submit', async (e) => {
 });
 
 loadMessages();
+
+//java check
