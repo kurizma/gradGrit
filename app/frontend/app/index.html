@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>GradGrit Message Board</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <h1>Messages</h1>
+    <div id="messages"></div>
+
+    <h2>New message</h2>
+    <form id="message-form" class="form" enctype="multipart/form-data">
+      <div class="field">
+        <label for="name">Your name</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          required
+          maxlength="50"
+          placeholder="Capybara (Max 50 characters)"
+        />
+      </div>
+
+      <div class="field">
+        <label for="message">Your message</label>
+        <textarea
+          id="message"
+          name="message"
+          rows="6"
+          required
+          maxlength="500"
+          placeholder="Write your birthday message here (Max 500 characters)"
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label for="access_code">Access code</label>
+        <div class="password-field">
+          <input
+            id="access_code"
+            name="access_code"
+            type="password"
+            required
+            placeholder="Enter the access code"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            id="toggle-access-code"
+            aria-controls="access_code"
+            aria-pressed="false"
+          >
+            Show
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="file">Upload a file <span>(optional)</span></label>
+        <input
+          id="file"
+          name="file"
+          type="file"
+          accept="image/*,video/*,audio/*"
+        />
+        <small class="hint">
+          Allowed: image, audio, or video. Max sizes: images 10MB, audio 15MB, video 25MB.
+        </small>
+      </div>
+
+      <button type="submit" class="submit-button">Send message</button>
+    </form>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
