@@ -1,5 +1,3 @@
-// test
-
 const API_BASE = "https://gradgrit-api.kurizmatic.workers.dev";
 
 const loginSection = document.getElementById("login-section");
@@ -13,6 +11,10 @@ const loginStatus = document.getElementById("login-status");
 const logoutButton = document.getElementById("logout-button");
 const adminStatus = document.getElementById("admin-status");
 
+const messagesContainer = document.getElementById("messages-container");
+const refreshButton = document.getElementById("refresh-button");
+const loadingIndicator = document.getElementById("loading-indicator");
+
 function showLogin() {
   loginSection.hidden = false;
   adminSection.hidden = true;
@@ -21,6 +23,7 @@ function showLogin() {
 function showAdmin() {
   loginSection.hidden = true;
   adminSection.hidden = false;
+  loadMessages();
 }
 
 async function checkOwnerSession() {
@@ -52,6 +55,142 @@ async function checkOwnerSession() {
   }
 }
 
+async function loadMessages() {
+  console.log("Loading messages...");
+  
+  if (messagesContainer) {
+    messagesContainer.innerHTML = "";
+  }
+  if (loadingIndicator) {
+    loadingIndicator.hidden = false;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/admin/messages`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      throw new Error("Failed to load messages");
+    }
+
+    const result = await response.json();
+    console.log("Messages loaded:", result.messages?.length || 0);
+    
+    renderMessages(result.messages || []);
+  } catch (error) {
+    console.error("Failed to load messages:", error);
+    if (messagesContainer) {
+      messagesContainer.innerHTML = `
+        <p>Failed to load messages. Please refresh the page.</p>
+      `;
+    }
+  } finally {
+    if (loadingIndicator) {
+      loadingIndicator.hidden = true;
+    }
+  }
+}
+
+function renderMessages(messages) {
+  if (!messagesContainer) return;
+
+  if (messages.length === 0) {
+    messagesContainer.innerHTML = "<p>No messages found.</p>";
+    return;
+  }
+
+  const table = document.createElement("table");
+
+  const headerRow = document.createElement("tr");
+  headerRow.innerHTML = `
+    <th>Date</th>
+    <th>Name</th>
+    <th>Message</th>
+    <th>Status</th>
+    <th>Attachments</th>
+    <th>Actions</th>
+  `;
+  table.appendChild(headerRow);
+
+  messages.forEach(msg => {
+    const row = document.createElement("tr");
+    row.dataset.messageId = msg.id;
+
+    row.innerHTML = `
+      <td>${new Date(msg.created_at).toLocaleDateString()}</td>
+      <td>${escapeHtml(msg.name || "")}</td>
+      <td>${escapeHtml(msg.message || "")}</td>
+      <td>${msg.approved ? "Approved" : "Hidden"}</td>
+      <td>${msg.message_attachments && msg.message_attachments.length > 0 ? `${msg.message_attachments.length} file(s)` : "None"}</td>
+      <td>
+        <button 
+          class="toggle-approval-btn" 
+          data-message-id="${msg.id}" 
+          data-approved="${msg.approved}"
+        >
+          ${msg.approved ? "Hide" : "Restore"}
+        </button>
+      </td>
+    `;
+
+    table.appendChild(row);
+  });
+
+  messagesContainer.appendChild(table);
+
+  document.querySelectorAll(".toggle-approval-btn").forEach(btn => {
+    btn.addEventListener("click", async (event) => {
+      const messageId = event.target.dataset.messageId;
+      const currentApproved = event.target.dataset.approved === "true";
+      const newApproved = !currentApproved;
+
+      await toggleMessageApproval(messageId, newApproved);
+    });
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function toggleMessageApproval(messageId, approved) {
+  try {
+    const response = await fetch(
+      `${API_BASE}/admin/messages/${messageId}`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ approved }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update message");
+    }
+
+    await loadMessages();
+  } catch (error) {
+    console.error("Failed to toggle approval:", error);
+    alert("Failed to update message. Please try again.");
+  }
+}
+
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -78,8 +217,7 @@ loginForm.addEventListener("submit", async (event) => {
     const result = await response.json();
 
     if (!response.ok) {
-      loginStatus.textContent =
-        result.error || "Login failed.";
+      loginStatus.textContent = result.error || "Login failed.";
       return;
     }
 
@@ -88,8 +226,7 @@ loginForm.addEventListener("submit", async (event) => {
     showAdmin();
   } catch (error) {
     console.error("Login failed:", error);
-    loginStatus.textContent =
-      "Unable to contact the server.";
+    loginStatus.textContent = "Unable to contact the server.";
   } finally {
     loginButton.disabled = false;
     loginButton.textContent = "Log in";
@@ -120,11 +257,14 @@ logoutButton.addEventListener("click", async () => {
     showLogin();
   } catch (error) {
     console.error("Logout failed:", error);
-    adminStatus.textContent =
-      "Unable to log out. Please try again.";
+    adminStatus.textContent = "Unable to log out. Please try again.";
   } finally {
     logoutButton.disabled = false;
   }
 });
+
+if (refreshButton) {
+  refreshButton.addEventListener("click", loadMessages);
+}
 
 checkOwnerSession();

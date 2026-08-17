@@ -44,14 +44,21 @@
           You are logged in.
         </p>
 
-        <button type="button" id="logout-button">
-          Log out
-        </button>
+        <div>
+          <button type="button" id="logout-button">
+            Log out
+          </button>
+          <button type="button" id="refresh-button">
+            Refresh
+          </button>
+        </div>
 
-        <p>
-          Message moderation will appear here after the admin message
-          endpoints are added.
-        </p>
+        <div id="loading-indicator" hidden>
+          <p>Loading messages...</p>
+        </div>
+
+        <div id="messages-container">
+        </div>
       </section>
     </main>
 

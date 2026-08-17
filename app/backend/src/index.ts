@@ -5,6 +5,8 @@ import {
   handleOwnerLogin,
   handleOwnerLogout,
   handleOwnerCheck,
+  handleGetAdminMessages,
+  handleModerateMessage,
 } from "./routes/admin";
 import {
   containsBannedContent,
@@ -18,9 +20,11 @@ import {
   MAX_NAME_LENGTH,
 } from "./config";
 
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
 
     if (request.method === "OPTIONS") {
       return new Response(null, {
@@ -45,10 +49,19 @@ export default {
       return handleOwnerCheck(request, env);
     }
 
+    if (url.pathname === "/admin/messages") {
+      return handleGetAdminMessages(request, env);
+    }
+
+    if (url.pathname.startsWith("/admin/messages/") && request.method === "PATCH") {
+      return handleModerateMessage(request, env);
+    }
+
     const supabase = createClient(
       env.SUPABASE_URL,
       env.SUPABASE_SERVICE_ROLE_KEY
     );
+
 
     if (
       url.pathname === "/messages" &&
@@ -61,8 +74,10 @@ export default {
         .order("created_at", { ascending: false })
         .limit(50);
 
+
       if (error) {
         console.error("Failed to load messages:", error);
+
 
         return json(
           request,
@@ -71,14 +86,17 @@ export default {
         );
       }
 
+
       return json(request, data);
     }
+
 
     if (
       url.pathname === "/messages" &&
       request.method === "POST"
     ) {
       let formData: FormData;
+
 
       try {
         formData = await request.formData();
@@ -90,10 +108,12 @@ export default {
         );
       }
 
+
       const nameValue = formData.get("name");
       const messageValue = formData.get("message");
       const accessCodeValue = formData.get("access_code");
       const fileValue = formData.get("file");
+
 
       if (
         typeof nameValue !== "string" ||
@@ -107,6 +127,7 @@ export default {
         );
       }
 
+
       if (accessCodeValue !== env.MSG_ACCESS_CODE) {
         return json(
           request,
@@ -115,8 +136,10 @@ export default {
         );
       }
 
+
       const cleanName = nameValue.trim();
       const cleanMessage = messageValue.trim();
+
 
       if (
         cleanName.length === 0 ||
@@ -129,6 +152,7 @@ export default {
         );
       }
 
+
       if (
         cleanMessage.length === 0 ||
         cleanMessage.length > MAX_MESSAGE_LENGTH
@@ -140,6 +164,7 @@ export default {
         );
       }
 
+
       if (containsBannedContent(cleanMessage)) {
         return json(
           request,
@@ -148,16 +173,20 @@ export default {
         );
       }
 
+
       const file =
         fileValue instanceof File && fileValue.size > 0
           ? fileValue
           : null;
 
+
       let objectKey: string | null = null;
       let originalName: string | null = null;
 
+
       if (file) {
         const maxFileSize = getMaxFileSize(file.type);
+
 
         if (maxFileSize === null) {
           return json(
@@ -167,6 +196,7 @@ export default {
           );
         }
 
+
         if (file.size > maxFileSize) {
           return json(
             request,
@@ -175,11 +205,14 @@ export default {
           );
         }
 
+
         originalName =
           sanitizeFilename(file.name) || "file";
 
+
         objectKey =
           `messages/${crypto.randomUUID()}-${originalName}`;
+
 
         try {
           await env.MY_BUCKET.put(
@@ -197,6 +230,7 @@ export default {
             error
           );
 
+
           return json(
             request,
             { error: "Failed to upload file" },
@@ -204,6 +238,7 @@ export default {
           );
         }
       }
+
 
       const { data: messageRow, error: messageError } =
         await supabase
@@ -217,11 +252,13 @@ export default {
           .select("id, name, message, approved, created_at")
           .single();
 
+
       if (messageError || !messageRow) {
         console.error(
           "Failed to create message:",
           messageError
         );
+
 
         if (objectKey) {
           try {
@@ -234,12 +271,14 @@ export default {
           }
         }
 
+
         return json(
           request,
           { error: "Failed to create message" },
           500
         );
       }
+
 
       if (file && objectKey && originalName) {
         const { error: attachmentError } = await supabase
@@ -252,11 +291,13 @@ export default {
             file_size: file.size,
           });
 
+
         if (attachmentError) {
           console.error(
             "Failed to create attachment:",
             attachmentError
           );
+
 
           const { error: deleteMessageError } =
             await supabase
@@ -264,12 +305,14 @@ export default {
               .delete()
               .eq("id", messageRow.id);
 
+
           if (deleteMessageError) {
             console.error(
               "Failed to delete orphaned message:",
               deleteMessageError
             );
           }
+
 
           try {
             await env.MY_BUCKET.delete(objectKey);
@@ -280,6 +323,7 @@ export default {
             );
           }
 
+
           return json(
             request,
             { error: "Failed to save attachment" },
@@ -288,8 +332,10 @@ export default {
         }
       }
 
+
       return json(request, messageRow, 201);
     }
+
 
     return json(
       request,

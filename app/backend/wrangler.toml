@@ -8,3 +8,12 @@ LOG_LEVEL = "info"
 [[r2_buckets]]
 binding = "MY_BUCKET"
 bucket_name = "gradgrit"
+
+[secrets]
+required = [
+  "OWNER_PASSWORD",
+  "OWNER_SESSION_SECRET",
+  "SUPABASE_URL",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "MSG_ACCESS_CODE"
+]
