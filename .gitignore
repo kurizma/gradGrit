@@ -1,3 +1,5 @@
 app/backend/node_modules
 .DS_Store
 app/backend/.wrangler
+app/frontend/.wrangler
+app/frontend/wrangler.jsonc

@@ -1,3 +1,5 @@
+// test
+
 const API_BASE = "https://gradgrit-api.kurizmatic.workers.dev";
 
 const messagesEl = document.getElementById("messages");
