@@ -1,27 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GradGrit Messages</title>
-  </head>
 
-  <body>
-    <main>
-      <h1>GradGrit Messages</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GradGrit Messages</title>
+  <meta name="description" content="Public gratitude page for approved birthday messages." />
 
-      <div id="loading-indicator">
-        <p>Loading messages...</p>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="./messages.css" />
+  <script src="./messages.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <div class="header-actions">
+        <a href="/" class="leavemessage-link">Leave your own message</a>
+        <div class="header-status-group">
+          <span class="mini-status" id="approved-count">— messages</span>
+        </div>
       </div>
+    </div>
+  </header>
 
-      <div id="messages-container">
+  <main id="main-content">
+    <section class="hero-section">
+      <div class="shell hero-wrap reveal">
+        <p class="hero-kicker">Public gratitude</p>
+        <h1>GradGrit Messages</h1>
       </div>
+    </section>
 
-      <div>
-        <a href="/">← Back to submit a message</a>
+    <section class="gallery-section">
+      <div class="shell gallery-shell">
+        <div id="preview-status" class="status-banner" aria-live="polite">
+          Loading messages...
+        </div>
+
+        <div id="preview-loading" class="loading-panel">
+          <div class="loading-line"></div>
+          <div class="loading-line short"></div>
+        </div>
+
+        <div id="preview-empty" class="empty-panel" hidden>
+          <h2>No messages yet.</h2>
+          <p>Be the first to leave a message!</p>
+        </div>
+
+        <div id="messages-gallery" class="masonry-gallery" hidden>
+          <div class="masonry-column" id="gallery-column-1"></div>
+          <div class="masonry-column" id="gallery-column-2"></div>
+          <div class="masonry-column" id="gallery-column-3"></div>
+        </div>
       </div>
-    </main>
+    </section>
+  </main>
 
-    <script src="/messages/messages.js" defer></script>
-  </body>
+  <div id="image-lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Expanded image preview">
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+
+    <div class="lightbox-content">
+      <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image preview">
+        ×
+      </button>
+
+      <img id="lightbox-image" class="lightbox-image" alt="" />
+    </div>
+  </div>
+</body>
+
 </html>
