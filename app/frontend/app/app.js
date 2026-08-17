@@ -29,7 +29,7 @@ async function loadMessages() {
               (m.message || '') +
               '</div>'
           )
-          .join('')
+          .join('');
 }
 
 form.addEventListener('submit', async (e) => {
@@ -41,7 +41,6 @@ form.addEventListener('submit', async (e) => {
   const access_code = fd.get('access_code');
   const file = fd.get('file');
 
-  // For now, ignore file and just send text + access_code
   const payload = {
     name,
     message,
@@ -49,11 +48,19 @@ form.addEventListener('submit', async (e) => {
     ip_address: '',
   };
 
-  await fetch(API_BASE + '/messages', {
+  const res = await fetch(API_BASE + '/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    // Show error to user
+    alert('Error: ' + (result.error || 'Failed to send message'));
+    return;
+  }
 
   form.reset();
   loadMessages();
