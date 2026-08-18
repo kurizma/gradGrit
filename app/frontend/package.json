@@ -1,0 +1,16 @@
+{
+  "name": "gradgrit",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
