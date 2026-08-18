@@ -115,8 +115,7 @@ function openLightbox(src, alt, trigger = null) {
 
   image.src = src;
   image.alt = alt || "";
-  lightbox.hidden = false;
-  document.body.style.overflow = "hidden";
+  lightbox.showModal();
   lightboxLastTrigger = trigger;
 
   if (closeButton instanceof HTMLButtonElement) {
@@ -130,10 +129,9 @@ function closeLightbox() {
 
   if (!lightbox || !image) return;
 
-  lightbox.hidden = true;
+  lightbox.close();
   image.src = "";
   image.alt = "";
-  document.body.style.overflow = "";
 
   if (lightboxLastTrigger instanceof HTMLElement) {
     lightboxLastTrigger.focus();
@@ -336,6 +334,7 @@ async function loadMessages() {
     }
 
     distributeMessages(messages);
+    renderFeaturedCarousel(messages);
 
     const gallery = getGalleryElement();
     if (gallery) {
@@ -365,26 +364,19 @@ function initLightbox() {
   if (!lightbox) return;
 
   lightbox.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
+    const rect = lightbox.getBoundingClientRect();
+    const clickedOutsideContent =
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom;
 
-    if (target.hasAttribute("data-lightbox-close") || target === lightbox) {
-      closeLightbox();
-    }
+    if (clickedOutsideContent) closeLightbox();
   });
 
   if (closeButton instanceof HTMLButtonElement) {
     closeButton.addEventListener("click", closeLightbox);
   }
-
-  document.addEventListener("keydown", (event) => {
-    const lightboxElement = getLightboxElement();
-    if (!lightboxElement || lightboxElement.hidden) return;
-
-    if (event.key === "Escape") {
-      closeLightbox();
-    }
-  });
 }
 
 async function initApp() {

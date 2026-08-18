@@ -1,99 +1,102 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GradGrit Message Board</title>
-  </head>
 
-  <body>
-    <main>
-      <h1>Messages</h1>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>GradGrit Message Board</title>
+</head>
 
-      <section aria-labelledby="messages-heading">
-        <h2 id="messages-heading">Approved messages</h2>
-        <div id="messages" aria-live="polite">
-          Loading messages...
+<body>
+  <main>
+    <h1>Messages</h1>
+
+    <!-- <section aria-labelledby="messages-heading">
+      <h2 id="messages-heading">Approved messages</h2>
+      <div id="messages" aria-live="polite">
+        Loading messages...
+      </div>
+    </section> -->
+
+    <section aria-labelledby="new-message-heading">
+      <h2 id="new-message-heading">New message</h2>
+
+      <form id="message-form">
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" required maxlength="50" autocomplete="name"
+            placeholder="MamaCapybara" />
         </div>
-      </section>
 
-      <section aria-labelledby="new-message-heading">
-        <h2 id="new-message-heading">New message</h2>
+        <div>
+          <label for="message">Your message</label>
+          <textarea id="message" name="message" rows="6" required maxlength="500"
+            placeholder="Write your birthday message here"></textarea>
+        </div>
 
-        <form id="message-form">
-          <div>
-            <label for="name">Your name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              maxlength="50"
-              autocomplete="name"
-              placeholder="Capybara"
-            />
-          </div>
+        <div>
+          <label for="access_code">Access code</label>
 
           <div>
-            <label for="message">Your message</label>
-            <textarea
-              id="message"
-              name="message"
-              rows="6"
-              required
-              maxlength="500"
-              placeholder="Write your birthday message here"
-            ></textarea>
+            <input id="access_code" name="access_code" type="password" required autocomplete="off"
+              placeholder="Enter the access code" />
+
+            <button type="button" id="toggle-access-code" aria-controls="access_code" aria-pressed="false">
+              Show
+            </button>
           </div>
+        </div>
 
-          <div>
-            <label for="access_code">Access code</label>
+        <div>
+          <label for="file">Upload a file</label>
+          <input id="file" name="file" type="file" accept="image/*,audio/*,video/*" />
 
-            <div>
-              <input
-                id="access_code"
-                name="access_code"
-                type="password"
-                required
-                autocomplete="off"
-                placeholder="Enter the access code"
-              />
+          <small>
+            Optional. Images up to 10 MB, audio up to 15 MB, and video up to
+            25 MB.
+          </small>
+        </div>
 
-              <button
-                type="button"
-                id="toggle-access-code"
-                aria-controls="access_code"
-                aria-pressed="false"
-              >
-                Show
-              </button>
-            </div>
-          </div>
+        <button type="submit" id="submit-button">
+          Preview message
+        </button>
 
-          <div>
-            <label for="file">Upload a file</label>
-            <input
-              id="file"
-              name="file"
-              type="file"
-              accept="image/*,audio/*,video/*"
-            />
+        <p id="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
 
-            <small>
-              Optional. Images up to 10 MB, audio up to 15 MB, and video up to
-              25 MB.
-            </small>
-          </div>
+  <dialog id="preview-modal" class="modal" aria-labelledby="preview-title">
+    <div class="modal__content">
+      <button type="button" class="modal__close" id="close-preview" aria-label="Close preview">×</button>
+      <p class="modal__eyebrow">Almost ready</p>
+      <h2 id="preview-title">Preview your message</h2>
+      <article class="message-preview">
+        <p class="message-preview__name" id="preview-name"></p>
+        <p class="message-preview__text" id="preview-message"></p>
+        <div id="preview-media"></div>
+      </article>
+      <div class="modal__actions">
+        <button type="button" class="button button--secondary" id="edit-message">Edit message</button>
+        <button type="button" class="button button--primary" id="confirm-message">Confirm and send</button>
+      </div>
+    </div>
+  </dialog>
 
-          <button type="submit" id="submit-button">
-            Send message
-          </button>
+  <dialog id="view-modal" class="modal" aria-labelledby="view-title">
+    <div class="modal__content">
+      <button type="button" class="modal__close" id="close-view" aria-label="Close message">×</button>
+      <h2 id="view-title">Message</h2>
+      <article class="message-preview">
+        <p class="message-preview__name" id="view-name"></p>
+        <p class="message-preview__text" id="view-message"></p>
+        <div id="view-media"></div>
+      </article>
+    </div>
+  </dialog>
 
-          <p id="form-status" role="status" aria-live="polite"></p>
-        </form>
-      </section>
-    </main>
+  <script src="/app.js" defer></script>
+</body>
 
-    <script src="/app.js" defer></script>
-  </body>
 </html>

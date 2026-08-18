@@ -13,7 +13,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="./messages.css" />
+  <link rel="stylesheet" href="./messages-theme.css" />
   <script src="./messages.js" defer></script>
 </head>
 
@@ -23,7 +23,7 @@
       <div class="header-actions">
         <a href="/" class="leavemessage-link">Leave your own message</a>
         <div class="header-status-group">
-          <span class="mini-status" id="approved-count">— messages</span>
+          <span class="mini-status" id="approved-count">0 messages</span>
         </div>
       </div>
     </div>
@@ -37,11 +37,28 @@
       </div>
     </section>
 
+    <section class="featured-section">
+      <div class="shell featured-shell">
+        <div class="featured-header">
+          <div>
+            <p class="section-kicker">Featured messages</p>
+            <h2>Words worth keeping. Every wish, treasured.</h2>
+          </div>
+          <div class="carousel-controls">
+            <span class="carousel-counter" id="featured-carousel-counter">0 / 0</span>
+            <div class="carousel-actions">
+              <button type="button" class="carousel-button" id="featured-carousel-prev" aria-label="Previous message">‹</button>
+              <button type="button" class="carousel-button" id="featured-carousel-next" aria-label="Next message">›</button>
+            </div>
+          </div>
+        </div>
+        <div class="featured-carousel" id="featured-carousel" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="gallery-section">
       <div class="shell gallery-shell">
-        <div id="preview-status" class="status-banner" aria-live="polite">
-          Loading messages...
-        </div>
+        <div id="preview-status" class="status-banner" aria-live="polite">Loading messages...</div>
 
         <div id="preview-loading" class="loading-panel">
           <div class="loading-line"></div>
@@ -62,17 +79,16 @@
     </section>
   </main>
 
-  <div id="image-lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Expanded image preview">
+  <dialog id="image-lightbox" class="lightbox" aria-modal="true" aria-label="Expanded image preview">
     <div class="lightbox-backdrop" data-lightbox-close></div>
-
     <div class="lightbox-content">
-      <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image preview">
-        ×
-      </button>
-
+      <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image preview"></button>
       <img id="lightbox-image" class="lightbox-image" alt="" />
     </div>
-  </div>
+  </dialog>
+
+  <script src="/messages.js" defer></script>
+  <script src="/carousel.js" defer></script>
 </body>
 
 </html>

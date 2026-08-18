@@ -5,7 +5,7 @@ export function getCorsHeaders(request: Request) {
 
   const headers = new Headers({
     "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token",
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
     "Content-Type": "application/json",
     "Vary": "Origin",
   });
