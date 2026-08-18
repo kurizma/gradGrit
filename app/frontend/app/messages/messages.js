@@ -111,12 +111,18 @@ function openLightbox(src, alt, trigger = null) {
   const image = getLightboxImageElement();
   const closeButton = getLightboxCloseButton();
 
-  if (!lightbox || !image) return;
+  if (!(lightbox instanceof HTMLDialogElement) || !image) {
+    console.error("Lightbox dialog or image element was not found.");
+    return;
+  }
 
   image.src = src;
   image.alt = alt || "";
-  lightbox.showModal();
   lightboxLastTrigger = trigger;
+
+  if (!lightbox.open) {
+    lightbox.showModal();
+  }
 
   if (closeButton instanceof HTMLButtonElement) {
     closeButton.focus();
@@ -127,9 +133,14 @@ function closeLightbox() {
   const lightbox = getLightboxElement();
   const image = getLightboxImageElement();
 
-  if (!lightbox || !image) return;
+  if (!(lightbox instanceof HTMLDialogElement) || !image) {
+    return;
+  }
 
-  lightbox.close();
+  if (lightbox.open) {
+    lightbox.close();
+  }
+
   image.src = "";
   image.alt = "";
 
@@ -212,7 +223,10 @@ function pickPrimaryAttachment(attachments) {
   return attachments[0];
 }
 
-function createMessageCard(message, index) {
+function createMessageCard(message, index, options = {}) {
+  const includeAttachments = options.includeAttachments !== false;
+  const urlBuilder = options.urlBuilder || getPublicAttachmentUrl;
+
   const card = document.createElement("article");
   card.className = "preview-card";
   card.style.transitionDelay = `${Math.min(index * 70, 560)}ms`;
@@ -228,6 +242,7 @@ function createMessageCard(message, index) {
   card.append(name, text);
 
   const metaText = formatDate(message.created_at);
+
   if (metaText) {
     const meta = document.createElement("p");
     meta.className = "preview-card-meta";
@@ -235,20 +250,31 @@ function createMessageCard(message, index) {
     card.appendChild(meta);
   }
 
-  const attachments = Array.isArray(message.message_attachments)
-    ? message.message_attachments
-    : [];
+  if (includeAttachments) {
+    const attachments = Array.isArray(message.message_attachments)
+      ? message.message_attachments
+      : [];
 
-  const primaryAttachment = pickPrimaryAttachment(attachments);
-  if (primaryAttachment) {
-    card.appendChild(createMediaElement(message.id, primaryAttachment, getPublicAttachmentUrl));
-  }
+    const primaryAttachment = pickPrimaryAttachment(attachments);
 
-  if (attachments.length > 1) {
-    const more = document.createElement("p");
-    more.className = "preview-attachments-note";
-    more.textContent = `+${attachments.length - 1} more attachment${attachments.length - 1 === 1 ? "" : "s"}`;
-    card.appendChild(more);
+    if (primaryAttachment) {
+      card.appendChild(
+        createMediaElement(
+          message.id,
+          primaryAttachment,
+          urlBuilder
+        )
+      );
+    }
+
+    if (attachments.length > 1) {
+      const more = document.createElement("p");
+      more.className = "preview-attachments-note";
+      more.textContent = `+${attachments.length - 1} more attachment${
+        attachments.length - 1 === 1 ? "" : "s"
+      }`;
+      card.appendChild(more);
+    }
   }
 
   queueReveal(card);
@@ -334,7 +360,12 @@ async function loadMessages() {
     }
 
     distributeMessages(messages);
-    renderFeaturedCarousel(messages);
+    
+    if (typeof renderFeaturedCarousel === "function") {
+      renderFeaturedCarousel(messages.slice(0, 8));
+    } else {
+      console.warn("Carousel unavailable: carousel.js did not load.");
+    }
 
     const gallery = getGalleryElement();
     if (gallery) {
@@ -347,8 +378,9 @@ async function loadMessages() {
     }
 
     setStatus("");
-  } catch {
-    setStatus("Network error. Please try again.");
+  } catch (error){
+    console.error("Failed to load or render messages:", error);
+    setStatus("Unable to display messages. Please try again.");
     setApprovedCount(0);
     clearGallery();
     showEmptyState(true);
@@ -361,22 +393,23 @@ function initLightbox() {
   const lightbox = getLightboxElement();
   const closeButton = getLightboxCloseButton();
 
-  if (!lightbox) return;
+  if (!(lightbox instanceof HTMLDialogElement)) {
+    console.error("Expected #image-lightbox to be a <dialog>.");
+    return;
+  }
+
+  closeButton?.addEventListener("click", closeLightbox);
 
   lightbox.addEventListener("click", (event) => {
-    const rect = lightbox.getBoundingClientRect();
-    const clickedOutsideContent =
-      event.clientX < rect.left ||
-      event.clientX > rect.right ||
-      event.clientY < rect.top ||
-      event.clientY > rect.bottom;
-
-    if (clickedOutsideContent) closeLightbox();
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
   });
 
-  if (closeButton instanceof HTMLButtonElement) {
-    closeButton.addEventListener("click", closeLightbox);
-  }
+  lightbox.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeLightbox();
+  });
 }
 
 async function initApp() {

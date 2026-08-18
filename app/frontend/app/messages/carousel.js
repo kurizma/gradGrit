@@ -284,4 +284,3 @@ function renderFeaturedCarousel(messages) {
     bindFeaturedCarouselScrollSync(carousel);
 }
 
-import { createMessageCard } from "./messages.js";
