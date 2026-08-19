@@ -10,7 +10,7 @@
     --color-surface-elevated: #342b70;
     --color-surface-glass: rgba(55, 45, 118, 0.72);
     --color-border: rgba(255, 255, 255, 0.14);
-    --color-border-strong: rgba(255, 220, 139, 0.5);
+    --color-border-strong: #ffdc8b80;
 
     /* Text */
     --color-text: #fffaf0;
@@ -55,6 +55,7 @@
 html {
     min-width: 20rem;
     background: var(--color-bg);
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -131,6 +132,11 @@ p {
     margin-top: 0;
 }
 
+.celebrate-text {
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
 h1,
 h2 {
     font-family: var(--font-heading);
@@ -157,9 +163,9 @@ h1::after {
     background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-rose));
 }
 
-section {
+/* section {
     margin-top: 3.5rem;
-}
+} */
 
 section>h2 {
     margin-bottom: 1.25rem;
@@ -548,8 +554,8 @@ button[type="submit"]:hover:not(:disabled) {
         padding-top: 3rem;
     }
 
-    section {
-        margin-top: 2.75rem;
+    .leave-message {
+        margin: 0;
     }
 
     form {

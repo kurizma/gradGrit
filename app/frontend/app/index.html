@@ -5,16 +5,26 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="banner-styles.css" />
   <link rel="icon" href="/favicon.ico">
   <title>GradGrit Message Guestbook</title>
 </head>
 
 <body>
   <main>
-    <h1>Celebrate With Us!</h1>
+    <header class="site-banner">
+    <img class="site-banner__image" src="assets/banner.png" alt="grit:lab graduating class group" />
+    <div class="site-banner__scrim"></div>
+    <div class="site-banner__content">
+      <p class="site-banner__eyebrow">grit:lab, Åland &middot; 2024 - 2026</p>
+      <h1 class="site-banner__title">Congratulations, Graduates!</h1>
+    </div>
+  </header>
+
+    <h2 class="celebrate-text">Celebrate With Us!</h2>
 
     <section aria-labelledby="new-message-heading">
-      <h2 id="new-message-heading">Leave a message for the graduates!</h2>
+      <h3 id="new-message-heading" class="leave-message">Leave a message for the graduates!</h3>
 
       <form id="message-form">
         <div>
