@@ -85,6 +85,7 @@ body::before {
     background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
     background-size: 3rem 3rem;
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent 80%);
     mask-image: linear-gradient(to bottom, black, transparent 80%);
 }
 
@@ -102,6 +103,7 @@ body::after {
         radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.4px);
     background-position: 8% 14%, 82% 62%, 46% 84%;
     background-size: 9rem 10rem, 12rem 14rem, 7rem 8rem;
+    -webkit-mask-image: radial-gradient(circle at 50% 30%, black, transparent 85%);
     mask-image: radial-gradient(circle at 50% 30%, black, transparent 85%);
 }
 
@@ -135,6 +137,40 @@ p {
 .celebrate-text {
     margin-top: 20px;
     margin-bottom: 0;
+}
+
+.celebrate-block {
+    margin-top: 20px;
+    margin-bottom: 1.25rem;
+}
+
+.guestbook-nav {
+    margin: 0;
+    color: var(--color-text-subtle);
+    font-size: 1.7rem;
+    font-family: var(--font-body);
+}
+
+.guestbook-nav__link {
+    color: var(--color-accent-gold-soft);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 215, 125, 0.4);
+    text-underline-offset: 0.2rem;
+    transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+.guestbook-nav__link:hover,
+.guestbook-nav__link:focus-visible {
+    color: var(--color-text);
+    text-decoration-color: var(--color-accent-gold);
+}
+
+@media (max-width: 35rem) {
+    .guestbook-nav {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
 }
 
 h1,
@@ -425,6 +461,7 @@ button[type="submit"]:hover:not(:disabled) {
 
 .modal::backdrop {
     background: rgba(7, 5, 28, 0.78);
+    -webkit-backdrop-filter: blur(0.5rem);
     backdrop-filter: blur(0.5rem);
 }
 
@@ -548,6 +585,7 @@ button[type="submit"]:hover:not(:disabled) {
     outline-offset: 0.2rem;
 }
 
+
 @media (max-width: 35rem) {
     main {
         width: min(100% - 1.25rem, 70rem);
@@ -555,7 +593,8 @@ button[type="submit"]:hover:not(:disabled) {
     }
 
     .leave-message {
-        margin: 0;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
     }
 
     form {
@@ -585,5 +624,79 @@ button[type="submit"]:hover:not(:disabled) {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+    }
+}
+
+@media (max-width: 35rem) {
+    main {
+        width: min(100% - 1.25rem, 70rem);
+        padding-top: 3rem;
+    }
+
+    .leave-message {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    form {
+        padding: 1.2rem;
+        border-radius: var(--radius-base);
+    }
+
+    #message-form>div {
+        margin-bottom: 1rem;
+    }
+
+    #message-form label {
+        margin-bottom: 0.35rem;
+        font-size: 0.82rem;
+    }
+
+    #message-form input:not([type="file"]) {
+        min-height: 2.5rem;
+        padding: 0.55rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    #message-form textarea {
+        min-height: 6.5rem;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    #message-form small {
+        font-size: 0.75rem;
+    }
+
+    #toggle-access-code {
+        min-width: 3.75rem;
+        font-size: 0.85rem;
+    }
+
+    input[type="file"] {
+        padding: 0.4rem;
+        font-size: 0.85rem;
+    }
+
+    input[type="file"]::file-selector-button {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.85rem;
+    }
+
+    button[type="submit"] {
+        min-height: 3rem;
+        font-size: 0.95rem;
+    }
+
+    label[for="access_code"]+div {
+        align-items: stretch;
+    }
+
+    .modal__actions {
+        flex-direction: column-reverse;
+    }
+
+    .button {
+        width: 100%;
     }
 }

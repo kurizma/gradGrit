@@ -14,6 +14,13 @@ const adminStatus = document.getElementById("admin-status");
 const messagesContainer = document.getElementById("messages-container");
 const refreshButton = document.getElementById("refresh-button");
 const loadingIndicator = document.getElementById("loading-indicator");
+const viewButton = document.getElementById("view-button");
+
+if (viewButton) {
+  viewButton.addEventListener("click", () => {
+    window.location.href = "/messages";
+  });
+}
 
 function showLogin() {
   loginSection.hidden = false;

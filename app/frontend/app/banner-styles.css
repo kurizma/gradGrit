@@ -3,9 +3,15 @@
 .site-banner {
   width: 100%;
   overflow: hidden;
+  border-radius: var(--radius-lg)
 }
 
-.site-banner__image {
+.guestbook-site-banner {
+  width: 100%;
+  overflow: hidden;
+}
+
+.site-banner__image, .guestbook-site-banner__image {
   display: block;
   width: 100%;
   height: auto;
@@ -13,7 +19,10 @@
   object-fit: contain;
   object-position: center;
   background: var(--color-bg-deep);
-  border-radius: var(--radius-lg);
+}
+
+.guestbook-site-banner__image {
+  max-height: 46rem;
 }
 
 .site-banner__scrim {
@@ -21,7 +30,7 @@
 }
 
 .site-banner__content {
-  border-radius: var(--radius-lg);
+  /* border-radius: var(--radius-lg); */
   width: 100%;
   padding: clamp(1.25rem, 3vw, 2.25rem);
   text-align: center;
@@ -88,7 +97,7 @@
   }
 
   .site-banner__title::after {
-    width: 3rem;
+    width: 8ch;
     margin-top: 0.7rem;
   }
 }
