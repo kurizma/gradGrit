@@ -271,6 +271,7 @@ h3 {
 
 /* Featured carousel */
 .featured-section {
+  margin-top: 20px;
   padding: 0 0 12px;
 }
 

@@ -3,10 +3,10 @@
 .site-banner {
   width: 100%;
   overflow: hidden;
-  border: 1px solid var(--color-border-strong);
+  /* border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-lg);
   background: var(--color-bg-deep);
-  box-shadow: var(--shadow-elevated);
+  box-shadow: var(--shadow-elevated); */
 }
 
 .site-banner__image {
